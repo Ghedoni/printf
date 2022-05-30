@@ -6,58 +6,56 @@
  */
 int _printf(const char *format, ...)
 {
-	int len = 0;
-	f_id func_list[] = {
-		{"c", _print_char},
-		{"s", _putstr},
-		{"%", _print_percent},
-		{"d", _print_int},
-		{"i", _print_int},
-		{"b", _print_binary},
+	int length = 0;
+	format_id f_list[] = {
+		{"c", _printchar},
+		{"s", _print_str},
+		{"%", _printPercent},
 		{NULL, NULL}
 	};
 	va_list arg;
 
 	if (!format)
 		return (-1);
-	va_start(args, format);
-	len = _identifier(format, func_list, args);
-	va_end(args);
-	return (len);
+	va_start(arg, format);
+	len = _identifier(format, f_list, arg);
+	va_end(arg);
+	return (length);
 }
 
 /**
  * _identifier - matches id to functions
  * @format: Parameter
- * @func_list: Parameter
+ * @f_list: Parameter
  * @args: Parameter
  * Return: int
  */
-int _identifier(const char *format, f_id func_list[], va_list args)
+int _identifier(const char *format, format_id f_list[], va_list arg)
 {
-	int i, j, len = 0;
+	int i, j, k, length = 0;
 
-	if (!format)
-		return (-1);
 	for (i = 0; format[i] != '\0'; i++)
 	{
 		if (format[i] == '%')
 		{
-			for (j = 0; func_list[j].id != NULL; j++)
+			for (j = 0; f_list[j].f_id != NULL; j++)
 			{
-				if (format[i + 1] == func_list[j].id[0])
+				if (format[i + 1] == f_list[j].f_id[0])
 				{
-					len += func_list[j].func(args);
+					k = f_list[j].func(arg);
+					if (k == -1)
+						return (-1);
+					length += k;
 					break;
 				}
 			}
-			if (func_list[j].id == NULL && format[i + 1] != ' ')
+			if (f_list[j].f_id == NULL && format[i + 1] != ' ')
 			{
 				if (format[i + 10] != '\0')
 				{
 					_putchar(format[i]);
 					_putchar(format[i + 1]);
-					len += 2;
+					length += 2;
 				}
 				else
 				{
@@ -68,8 +66,8 @@ int _identifier(const char *format, f_id func_list[], va_list args)
 			else
 			{
 				_putchar(format[i]);
-				len++;
+				length++;
 			}
 		}
-		return (len);
+		return (length);
 	}
